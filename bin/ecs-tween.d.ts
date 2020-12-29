@@ -71,31 +71,35 @@ declare module es {
         quadIn = 4,
         quadOut = 5,
         quadInOut = 6,
-        cubicIn = 7,
-        cubicOut = 8,
-        cubicInOut = 9,
-        quartIn = 10,
-        quartOut = 11,
-        quartInOut = 12,
-        expoIn = 13,
-        expoOut = 14,
-        expoInOut = 15,
-        circleIn = 16,
-        circleOut = 17,
-        circleInOut = 18,
-        elasticIn = 19,
-        elasticOut = 20,
-        elasticInOUT = 21,
-        punch = 22,
-        backIn = 23,
-        backOut = 24,
-        backInOut = 25,
-        bounceIn = 26,
-        bounceOut = 27,
-        bounceInOut = 28
+        quintIn = 7,
+        quintOut = 8,
+        quintInOut = 9,
+        cubicIn = 10,
+        cubicOut = 11,
+        cubicInOut = 12,
+        quartIn = 13,
+        quartOut = 14,
+        quartInOut = 15,
+        expoIn = 16,
+        expoOut = 17,
+        expoInOut = 18,
+        circleIn = 19,
+        circleOut = 20,
+        circleInOut = 21,
+        elasticIn = 22,
+        elasticOut = 23,
+        elasticInOut = 24,
+        punch = 25,
+        backIn = 26,
+        backOut = 27,
+        backInOut = 28,
+        bounceIn = 29,
+        bounceOut = 30,
+        bounceInOut = 31
     }
     class EaseHelper {
-        static oppositeEaseType(easeType: EaseType): EaseType.linear | EaseType.sineIn | EaseType.sineOut | EaseType.sineInOut | EaseType.quadIn | EaseType.quadOut | EaseType.quadInOut | EaseType.cubicIn | EaseType.cubicOut | EaseType.cubicInOut | EaseType.quartIn | EaseType.quartInOut | EaseType.expoIn | EaseType.expoOut | EaseType.expoInOut | EaseType.circleIn | EaseType.circleOut | EaseType.circleInOut | EaseType.elasticIn | EaseType.elasticOut | EaseType.elasticInOUT | EaseType.punch | EaseType.backIn | EaseType.backOut | EaseType.backInOut | EaseType.bounceIn | EaseType.bounceOut | EaseType.bounceInOut;
+        static oppositeEaseType(easeType: EaseType): EaseType.linear | EaseType.sineIn | EaseType.sineOut | EaseType.sineInOut | EaseType.quadIn | EaseType.quadOut | EaseType.quadInOut | EaseType.quintIn | EaseType.quintOut | EaseType.quintInOut | EaseType.cubicIn | EaseType.cubicOut | EaseType.cubicInOut | EaseType.quartIn | EaseType.quartInOut | EaseType.expoIn | EaseType.expoOut | EaseType.expoInOut | EaseType.circleIn | EaseType.circleOut | EaseType.circleInOut | EaseType.elasticIn | EaseType.elasticOut | EaseType.elasticInOut | EaseType.punch | EaseType.backIn | EaseType.backOut | EaseType.backInOut | EaseType.bounceIn | EaseType.bounceOut | EaseType.bounceInOut;
+        static ease(easeType: EaseType, t: number, duration: number): number;
     }
 }
 declare module es {
@@ -118,6 +122,29 @@ declare module es {
         static stopAllTweensWithContext(context: any, bringToCompletion?: boolean): void;
         static allTweenWithTarget(target: any): ITweenable[];
         static stopAllTweensWithTarget(target: any, bringToCompletion?: boolean): void;
+    }
+}
+declare module es {
+    class NumberTween extends Tween<number> {
+        static create(): NumberTween;
+        constructor(target?: ITweenTarget<number>, to?: number, duration?: number);
+        setIsRelative(): ITween<number>;
+        protected updateValue(): void;
+        recycleSelf(): void;
+    }
+    class Vector2Tween extends Tween<Vector2> {
+        static create(): Vector2Tween;
+        constructor(target?: ITweenTarget<Vector2>, to?: Vector2, duration?: number);
+        setIsRelative(): ITween<Vector2>;
+        protected updateValue(): void;
+        recycleSelf(): void;
+    }
+    class RectangleTween extends Tween<Rectangle> {
+        static create(): RectangleTween;
+        constructor(target?: ITweenTarget<Rectangle>, to?: Rectangle, duration?: number);
+        setIsRelative(): ITween<Rectangle>;
+        protected updateValue(): void;
+        recycleSelf(): void;
     }
 }
 declare module es {
@@ -176,6 +203,16 @@ declare module es {
             static easeOut(t: number, d: number): number;
             static easeInOut(t: number, d: number): number;
         }
+    }
+}
+declare module es {
+    class Lerps {
+        static lerp(from: number, to: number, t: number): number;
+        static lerpVector2(from: Vector2, to: Vector2, t: number): Vector2;
+        static lerpRectangle(from: Rectangle, to: Rectangle, t: number): Rectangle;
+        static ease(easeType: EaseType, from: number, to: number, t: number, duration: number): number;
+        static easeVector2(easeType: EaseType, from: Vector2, to: Vector2, t: number, duration: number): Vector2;
+        static easeRectangle(easeType: EaseType, from: Rectangle, to: Rectangle, t: number, duration: number): Rectangle;
     }
 }
 declare module es {

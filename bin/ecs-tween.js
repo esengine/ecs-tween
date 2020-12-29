@@ -277,28 +277,31 @@ var es;
         EaseType[EaseType["quadIn"] = 4] = "quadIn";
         EaseType[EaseType["quadOut"] = 5] = "quadOut";
         EaseType[EaseType["quadInOut"] = 6] = "quadInOut";
-        EaseType[EaseType["cubicIn"] = 7] = "cubicIn";
-        EaseType[EaseType["cubicOut"] = 8] = "cubicOut";
-        EaseType[EaseType["cubicInOut"] = 9] = "cubicInOut";
-        EaseType[EaseType["quartIn"] = 10] = "quartIn";
-        EaseType[EaseType["quartOut"] = 11] = "quartOut";
-        EaseType[EaseType["quartInOut"] = 12] = "quartInOut";
-        EaseType[EaseType["expoIn"] = 13] = "expoIn";
-        EaseType[EaseType["expoOut"] = 14] = "expoOut";
-        EaseType[EaseType["expoInOut"] = 15] = "expoInOut";
-        EaseType[EaseType["circleIn"] = 16] = "circleIn";
-        EaseType[EaseType["circleOut"] = 17] = "circleOut";
-        EaseType[EaseType["circleInOut"] = 18] = "circleInOut";
-        EaseType[EaseType["elasticIn"] = 19] = "elasticIn";
-        EaseType[EaseType["elasticOut"] = 20] = "elasticOut";
-        EaseType[EaseType["elasticInOUT"] = 21] = "elasticInOUT";
-        EaseType[EaseType["punch"] = 22] = "punch";
-        EaseType[EaseType["backIn"] = 23] = "backIn";
-        EaseType[EaseType["backOut"] = 24] = "backOut";
-        EaseType[EaseType["backInOut"] = 25] = "backInOut";
-        EaseType[EaseType["bounceIn"] = 26] = "bounceIn";
-        EaseType[EaseType["bounceOut"] = 27] = "bounceOut";
-        EaseType[EaseType["bounceInOut"] = 28] = "bounceInOut";
+        EaseType[EaseType["quintIn"] = 7] = "quintIn";
+        EaseType[EaseType["quintOut"] = 8] = "quintOut";
+        EaseType[EaseType["quintInOut"] = 9] = "quintInOut";
+        EaseType[EaseType["cubicIn"] = 10] = "cubicIn";
+        EaseType[EaseType["cubicOut"] = 11] = "cubicOut";
+        EaseType[EaseType["cubicInOut"] = 12] = "cubicInOut";
+        EaseType[EaseType["quartIn"] = 13] = "quartIn";
+        EaseType[EaseType["quartOut"] = 14] = "quartOut";
+        EaseType[EaseType["quartInOut"] = 15] = "quartInOut";
+        EaseType[EaseType["expoIn"] = 16] = "expoIn";
+        EaseType[EaseType["expoOut"] = 17] = "expoOut";
+        EaseType[EaseType["expoInOut"] = 18] = "expoInOut";
+        EaseType[EaseType["circleIn"] = 19] = "circleIn";
+        EaseType[EaseType["circleOut"] = 20] = "circleOut";
+        EaseType[EaseType["circleInOut"] = 21] = "circleInOut";
+        EaseType[EaseType["elasticIn"] = 22] = "elasticIn";
+        EaseType[EaseType["elasticOut"] = 23] = "elasticOut";
+        EaseType[EaseType["elasticInOut"] = 24] = "elasticInOut";
+        EaseType[EaseType["punch"] = 25] = "punch";
+        EaseType[EaseType["backIn"] = 26] = "backIn";
+        EaseType[EaseType["backOut"] = 27] = "backOut";
+        EaseType[EaseType["backInOut"] = 28] = "backInOut";
+        EaseType[EaseType["bounceIn"] = 29] = "bounceIn";
+        EaseType[EaseType["bounceOut"] = 30] = "bounceOut";
+        EaseType[EaseType["bounceInOut"] = 31] = "bounceInOut";
     })(EaseType = es.EaseType || (es.EaseType = {}));
     var EaseHelper = (function () {
         function EaseHelper() {
@@ -359,6 +362,76 @@ var es;
                     return easeType;
                 default:
                     return easeType;
+            }
+        };
+        EaseHelper.ease = function (easeType, t, duration) {
+            switch (easeType) {
+                case EaseType.linear:
+                    return es.Easing.Linear.easeNone(t, duration);
+                case EaseType.backIn:
+                    return es.Easing.Back.easeIn(t, duration);
+                case EaseType.backOut:
+                    return es.Easing.Back.easeOut(t, duration);
+                case EaseType.backInOut:
+                    return es.Easing.Back.easeInOut(t, duration);
+                case EaseType.bounceIn:
+                    return es.Easing.Bounce.easeIn(t, duration);
+                case EaseType.bounceOut:
+                    return es.Easing.Bounce.easeOut(t, duration);
+                case EaseType.bounceInOut:
+                    return es.Easing.Bounce.easeInOut(t, duration);
+                case EaseType.circleIn:
+                    return es.Easing.Circular.easeIn(t, duration);
+                case EaseType.circleOut:
+                    return es.Easing.Circular.easeOut(t, duration);
+                case EaseType.circleInOut:
+                    return es.Easing.Circular.easeInOut(t, duration);
+                case EaseType.cubicIn:
+                    return es.Easing.Cubic.easeIn(t, duration);
+                case EaseType.cubicOut:
+                    return es.Easing.Cubic.easeOut(t, duration);
+                case EaseType.cubicInOut:
+                    return es.Easing.Cubic.easeInOut(t, duration);
+                case EaseType.elasticIn:
+                    return es.Easing.Elastic.easeIn(t, duration);
+                case EaseType.elasticOut:
+                    return es.Easing.Elastic.easeOut(t, duration);
+                case EaseType.elasticInOut:
+                    return es.Easing.Elastic.easeInOut(t, duration);
+                case EaseType.punch:
+                    return es.Easing.Elastic.punch(t, duration);
+                case EaseType.expoIn:
+                    return es.Easing.Exponential.easeIn(t, duration);
+                case EaseType.expoOut:
+                    return es.Easing.Exponential.easeOut(t, duration);
+                case EaseType.expoInOut:
+                    return es.Easing.Exponential.easeInOut(t, duration);
+                case EaseType.quadIn:
+                    return es.Easing.Quadratic.easeIn(t, duration);
+                case EaseType.quadOut:
+                    return es.Easing.Quadratic.easeOut(t, duration);
+                case EaseType.quadInOut:
+                    return es.Easing.Quadratic.easeInOut(t, duration);
+                case EaseType.quadIn:
+                    return es.Easing.Quadratic.easeIn(t, duration);
+                case EaseType.quadOut:
+                    return es.Easing.Quadratic.easeOut(t, duration);
+                case EaseType.quadInOut:
+                    return es.Easing.Quadratic.easeInOut(t, duration);
+                case EaseType.quintIn:
+                    return es.Easing.Quintic.easeIn(t, duration);
+                case EaseType.quintOut:
+                    return es.Easing.Quintic.easeOut(t, duration);
+                case EaseType.quintInOut:
+                    return es.Easing.Quintic.easeInOut(t, duration);
+                case EaseType.sineIn:
+                    return es.Easing.Sinusoidal.easeIn(t, duration);
+                case EaseType.sineOut:
+                    return es.Easing.Sinusoidal.easeOut(t, duration);
+                case EaseType.sineInOut:
+                    return es.Easing.Sinusoidal.easeInOut(t, duration);
+                default:
+                    return es.Easing.Linear.easeNone(t, duration);
             }
         };
         return EaseHelper;
@@ -451,6 +524,87 @@ var es;
         return TweenManager;
     }(es.GlobalManager));
     es.TweenManager = TweenManager;
+})(es || (es = {}));
+var es;
+(function (es) {
+    var NumberTween = (function (_super) {
+        __extends(NumberTween, _super);
+        function NumberTween(target, to, duration) {
+            var _this = _super.call(this) || this;
+            _this.initialize(target, to, duration);
+            return _this;
+        }
+        NumberTween.create = function () {
+            return es.TweenManager.cacheNumberTweens ? es.Pool.obtain(NumberTween) : new NumberTween();
+        };
+        NumberTween.prototype.setIsRelative = function () {
+            this._isRelative = true;
+            this._toValue += this._fromValue;
+            return this;
+        };
+        NumberTween.prototype.updateValue = function () {
+            this._target.setTweenedValue(es.Lerps.ease(this._easeType, this._fromValue, this._toValue, this._elapsedTime, this._duration));
+        };
+        NumberTween.prototype.recycleSelf = function () {
+            _super.prototype.recycleSelf.call(this);
+            if (this._shouldRecycleTween && es.TweenManager.cacheNumberTweens)
+                es.Pool.free(this);
+        };
+        return NumberTween;
+    }(es.Tween));
+    es.NumberTween = NumberTween;
+    var Vector2Tween = (function (_super) {
+        __extends(Vector2Tween, _super);
+        function Vector2Tween(target, to, duration) {
+            var _this = _super.call(this) || this;
+            _this.initialize(target, to, duration);
+            return _this;
+        }
+        Vector2Tween.create = function () {
+            return es.TweenManager.cacheVector2Tweens ? es.Pool.obtain(Vector2Tween) : new Vector2Tween();
+        };
+        Vector2Tween.prototype.setIsRelative = function () {
+            this._isRelative = true;
+            this._toValue.add(this._fromValue);
+            return this;
+        };
+        Vector2Tween.prototype.updateValue = function () {
+            this._target.setTweenedValue(es.Lerps.easeVector2(this._easeType, this._fromValue, this._toValue, this._elapsedTime, this._duration));
+        };
+        Vector2Tween.prototype.recycleSelf = function () {
+            _super.prototype.recycleSelf.call(this);
+            if (this._shouldRecycleTween && es.TweenManager.cacheVector2Tweens)
+                es.Pool.free(this);
+        };
+        return Vector2Tween;
+    }(es.Tween));
+    es.Vector2Tween = Vector2Tween;
+    var RectangleTween = (function (_super) {
+        __extends(RectangleTween, _super);
+        function RectangleTween(target, to, duration) {
+            var _this = _super.call(this) || this;
+            _this.initialize(target, to, duration);
+            return _this;
+        }
+        RectangleTween.create = function () {
+            return es.TweenManager.cacheRectTweens ? es.Pool.obtain(RectangleTween) : new RectangleTween();
+        };
+        RectangleTween.prototype.setIsRelative = function () {
+            this._isRelative = true;
+            this._toValue = new es.Rectangle(this._toValue.x + this._fromValue.x, this._toValue.y + this._fromValue.y, this._toValue.width + this._fromValue.width, this._toValue.height + this._fromValue.height);
+            return this;
+        };
+        RectangleTween.prototype.updateValue = function () {
+            this._target.setTweenedValue(es.Lerps.easeRectangle(this._easeType, this._fromValue, this._toValue, this._elapsedTime, this._duration));
+        };
+        RectangleTween.prototype.recycleSelf = function () {
+            _super.prototype.recycleSelf.call(this);
+            if (this._shouldRecycleTween && es.TweenManager.cacheRectTweens)
+                es.Pool.free(this);
+        };
+        return RectangleTween;
+    }(es.Tween));
+    es.RectangleTween = RectangleTween;
 })(es || (es = {}));
 var es;
 (function (es) {
@@ -681,4 +835,31 @@ var es;
         }());
         Easing.Sinusoidal = Sinusoidal;
     })(Easing = es.Easing || (es.Easing = {}));
+})(es || (es = {}));
+var es;
+(function (es) {
+    var Lerps = (function () {
+        function Lerps() {
+        }
+        Lerps.lerp = function (from, to, t) {
+            return from + (to - from) * t;
+        };
+        Lerps.lerpVector2 = function (from, to, t) {
+            return new es.Vector2(from.x + (to.x - from.x) * t, from.y + (to.y - from.y) * t);
+        };
+        Lerps.lerpRectangle = function (from, to, t) {
+            return new es.Rectangle((from.x + (to.x - from.x) * t), (from.y + (to.x - from.y) * t), (from.width + (to.width - from.width) * t), (from.height + (to.height - from.height) * t));
+        };
+        Lerps.ease = function (easeType, from, to, t, duration) {
+            return this.lerp(from, to, es.EaseHelper.ease(easeType, t, duration));
+        };
+        Lerps.easeVector2 = function (easeType, from, to, t, duration) {
+            return this.lerpVector2(from, to, es.EaseHelper.ease(easeType, t, duration));
+        };
+        Lerps.easeRectangle = function (easeType, from, to, t, duration) {
+            return this.lerpRectangle(from, to, es.EaseHelper.ease(easeType, t, duration));
+        };
+        return Lerps;
+    }());
+    es.Lerps = Lerps;
 })(es || (es = {}));
