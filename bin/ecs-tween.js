@@ -1,3 +1,13 @@
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var __generator = (this && this.__generator) || function (thisArg, body) {
     var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
     return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
@@ -25,16 +35,155 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
+var es;
+(function (es) {
+    var AbstractTweenable = (function () {
+        function AbstractTweenable() {
+        }
+        AbstractTweenable.prototype.recycleSelf = function () {
+        };
+        AbstractTweenable.prototype.isRunning = function () {
+            return this._isCurrentlyManagedByTweenManager && !this._isPaused;
+        };
+        AbstractTweenable.prototype.start = function () {
+            if (this._isCurrentlyManagedByTweenManager) {
+                this._isPaused = false;
+                return;
+            }
+            es.TweenManager.addTween(this);
+            this._isCurrentlyManagedByTweenManager = true;
+            this._isPaused = false;
+        };
+        AbstractTweenable.prototype.pause = function () {
+            this._isPaused = true;
+        };
+        AbstractTweenable.prototype.resume = function () {
+            this._isPaused = false;
+        };
+        AbstractTweenable.prototype.stop = function (bringToCompletion) {
+            if (bringToCompletion === void 0) { bringToCompletion = false; }
+            es.TweenManager.removeTween(this);
+            this._isCurrentlyManagedByTweenManager = false;
+            this._isPaused = true;
+        };
+        return AbstractTweenable;
+    }());
+    es.AbstractTweenable = AbstractTweenable;
+})(es || (es = {}));
+var es;
+(function (es) {
+    var PropertyTarget = (function () {
+        function PropertyTarget(target, propertyName) {
+            this._target = target;
+            this._propertyName = propertyName;
+        }
+        PropertyTarget.prototype.getTargetObject = function () {
+            return this._target;
+        };
+        PropertyTarget.prototype.setTweenedValue = function (value) {
+            this._target[this._propertyName] = value;
+        };
+        PropertyTarget.prototype.getTweenedValue = function () {
+            return this._target[this._propertyName];
+        };
+        return PropertyTarget;
+    }());
+    var PropertyTweens = (function () {
+        function PropertyTweens() {
+        }
+        PropertyTweens.NumberPropertyTo = function (self, memberName, to, duration) {
+            var tweenTarget = new PropertyTarget(self, memberName);
+            var tween = es.TweenManager.cacheNumberTweens ? es.Pool.obtain(es.NumberTween) : new es.NumberTween();
+            tween.initialize(tweenTarget, to, duration);
+            return tween;
+        };
+        PropertyTweens.Vector2PropertyTo = function (self, memeberName, to, duration) {
+            var tweenTarget = new PropertyTarget(self, memeberName);
+            var tween = es.TweenManager.cacheVector2Tweens ? es.Pool.obtain(es.Vector2Tween) : new es.Vector2Tween();
+            tween.initialize(tweenTarget, to, duration);
+            return tween;
+        };
+        return PropertyTweens;
+    }());
+    es.PropertyTweens = PropertyTweens;
+})(es || (es = {}));
+var es;
+(function (es) {
+    var TransformSpringTween = (function (_super) {
+        __extends(TransformSpringTween, _super);
+        function TransformSpringTween(transform, targetType, targetValue) {
+            var _this = _super.call(this) || this;
+            _this.dampingRatio = 0.23;
+            _this.angularFrequency = 25;
+            _this._transform = transform;
+            _this._targetType = targetType;
+            _this.setTargetValue(targetValue);
+            return _this;
+        }
+        Object.defineProperty(TransformSpringTween.prototype, "targetType", {
+            get: function () {
+                return this._targetType;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        TransformSpringTween.prototype.setTargetValue = function (targetValue) {
+            this._velocity = es.Vector2.zero;
+            this._targetValue = targetValue;
+            if (!this._isCurrentlyManagedByTweenManager)
+                this.start();
+        };
+        TransformSpringTween.prototype.updateDampingRatioWithHalfLife = function (lambda) {
+            this.dampingRatio = (-lambda / this.angularFrequency) * Math.log(0.5);
+        };
+        TransformSpringTween.prototype.tick = function () {
+            if (!this._isPaused)
+                this.setTweenedValue(es.Lerps.fastSpring(this.getCurrentValueOfTweenedTargetType(), this._targetValue, this._velocity, this.dampingRatio, this.angularFrequency));
+            return false;
+        };
+        TransformSpringTween.prototype.setTweenedValue = function (value) {
+            switch (this._targetType) {
+                case es.TransformTargetType.position:
+                    this._transform.position = value;
+                    break;
+                case es.TransformTargetType.localPosition:
+                    this._transform.localPosition = value;
+                    break;
+                case es.TransformTargetType.scale:
+                    this._transform.scale = value;
+                    break;
+                case es.TransformTargetType.localScale:
+                    this._transform.localScale = value;
+                    break;
+                case es.TransformTargetType.rotationDegrees:
+                    this._transform.rotationDegrees = value.x;
+                case es.TransformTargetType.localRotationDegrees:
+                    this._transform.localRotationDegrees = value.x;
+                    break;
+            }
+        };
+        TransformSpringTween.prototype.getCurrentValueOfTweenedTargetType = function () {
+            switch (this._targetType) {
+                case es.TransformTargetType.position:
+                    return this._transform.position;
+                case es.TransformTargetType.localPosition:
+                    return this._transform.localPosition;
+                case es.TransformTargetType.scale:
+                    return this._transform.scale;
+                case es.TransformTargetType.localScale:
+                    return this._transform.localScale;
+                case es.TransformTargetType.rotationDegrees:
+                    return new es.Vector2(this._transform.rotationDegrees);
+                case es.TransformTargetType.localRotationDegrees:
+                    return new es.Vector2(this._transform.localRotationDegrees, 0);
+                default:
+                    return es.Vector2.zero;
+            }
+        };
+        return TransformSpringTween;
+    }(es.AbstractTweenable));
+    es.TransformSpringTween = TransformSpringTween;
+})(es || (es = {}));
 var es;
 (function (es) {
     var LoopType;
@@ -265,6 +414,168 @@ var es;
         return Tween;
     }());
     es.Tween = Tween;
+})(es || (es = {}));
+var es;
+(function (es) {
+    var NumberTween = (function (_super) {
+        __extends(NumberTween, _super);
+        function NumberTween(target, to, duration) {
+            var _this = _super.call(this) || this;
+            _this.initialize(target, to, duration);
+            return _this;
+        }
+        NumberTween.create = function () {
+            return es.TweenManager.cacheNumberTweens ? es.Pool.obtain(NumberTween) : new NumberTween();
+        };
+        NumberTween.prototype.setIsRelative = function () {
+            this._isRelative = true;
+            this._toValue += this._fromValue;
+            return this;
+        };
+        NumberTween.prototype.updateValue = function () {
+            this._target.setTweenedValue(es.Lerps.ease(this._easeType, this._fromValue, this._toValue, this._elapsedTime, this._duration));
+        };
+        NumberTween.prototype.recycleSelf = function () {
+            _super.prototype.recycleSelf.call(this);
+            if (this._shouldRecycleTween && es.TweenManager.cacheNumberTweens)
+                es.Pool.free(this);
+        };
+        return NumberTween;
+    }(es.Tween));
+    es.NumberTween = NumberTween;
+    var Vector2Tween = (function (_super) {
+        __extends(Vector2Tween, _super);
+        function Vector2Tween(target, to, duration) {
+            var _this = _super.call(this) || this;
+            _this.initialize(target, to, duration);
+            return _this;
+        }
+        Vector2Tween.create = function () {
+            return es.TweenManager.cacheVector2Tweens ? es.Pool.obtain(Vector2Tween) : new Vector2Tween();
+        };
+        Vector2Tween.prototype.setIsRelative = function () {
+            this._isRelative = true;
+            this._toValue.add(this._fromValue);
+            return this;
+        };
+        Vector2Tween.prototype.updateValue = function () {
+            this._target.setTweenedValue(es.Lerps.easeVector2(this._easeType, this._fromValue, this._toValue, this._elapsedTime, this._duration));
+        };
+        Vector2Tween.prototype.recycleSelf = function () {
+            _super.prototype.recycleSelf.call(this);
+            if (this._shouldRecycleTween && es.TweenManager.cacheVector2Tweens)
+                es.Pool.free(this);
+        };
+        return Vector2Tween;
+    }(es.Tween));
+    es.Vector2Tween = Vector2Tween;
+    var RectangleTween = (function (_super) {
+        __extends(RectangleTween, _super);
+        function RectangleTween(target, to, duration) {
+            var _this = _super.call(this) || this;
+            _this.initialize(target, to, duration);
+            return _this;
+        }
+        RectangleTween.create = function () {
+            return es.TweenManager.cacheRectTweens ? es.Pool.obtain(RectangleTween) : new RectangleTween();
+        };
+        RectangleTween.prototype.setIsRelative = function () {
+            this._isRelative = true;
+            this._toValue = new es.Rectangle(this._toValue.x + this._fromValue.x, this._toValue.y + this._fromValue.y, this._toValue.width + this._fromValue.width, this._toValue.height + this._fromValue.height);
+            return this;
+        };
+        RectangleTween.prototype.updateValue = function () {
+            this._target.setTweenedValue(es.Lerps.easeRectangle(this._easeType, this._fromValue, this._toValue, this._elapsedTime, this._duration));
+        };
+        RectangleTween.prototype.recycleSelf = function () {
+            _super.prototype.recycleSelf.call(this);
+            if (this._shouldRecycleTween && es.TweenManager.cacheRectTweens)
+                es.Pool.free(this);
+        };
+        return RectangleTween;
+    }(es.Tween));
+    es.RectangleTween = RectangleTween;
+})(es || (es = {}));
+var es;
+(function (es) {
+    var TransformTargetType;
+    (function (TransformTargetType) {
+        TransformTargetType[TransformTargetType["position"] = 0] = "position";
+        TransformTargetType[TransformTargetType["localPosition"] = 1] = "localPosition";
+        TransformTargetType[TransformTargetType["scale"] = 2] = "scale";
+        TransformTargetType[TransformTargetType["localScale"] = 3] = "localScale";
+        TransformTargetType[TransformTargetType["rotationDegrees"] = 4] = "rotationDegrees";
+        TransformTargetType[TransformTargetType["localRotationDegrees"] = 5] = "localRotationDegrees";
+    })(TransformTargetType = es.TransformTargetType || (es.TransformTargetType = {}));
+    var TransformVector2Tween = (function (_super) {
+        __extends(TransformVector2Tween, _super);
+        function TransformVector2Tween() {
+            return _super !== null && _super.apply(this, arguments) || this;
+        }
+        TransformVector2Tween.prototype.setTweenedValue = function (value) {
+            switch (this._targetType) {
+                case TransformTargetType.position:
+                    this._transform.position = value;
+                    break;
+                case TransformTargetType.localPosition:
+                    this._transform.localPosition = value;
+                    break;
+                case TransformTargetType.scale:
+                    this._transform.scale = value;
+                    break;
+                case TransformTargetType.localScale:
+                    this._transform.localScale = value;
+                    break;
+                case TransformTargetType.rotationDegrees:
+                    this._transform.rotationDegrees = value.x;
+                case TransformTargetType.localRotationDegrees:
+                    this._transform.localRotationDegrees = value.x;
+                    break;
+            }
+        };
+        TransformVector2Tween.prototype.getTweenedValue = function () {
+            switch (this._targetType) {
+                case TransformTargetType.position:
+                    return this._transform.position;
+                case TransformTargetType.localPosition:
+                    return this._transform.localPosition;
+                case TransformTargetType.scale:
+                    return this._transform.scale;
+                case TransformTargetType.localScale:
+                    return this._transform.localScale;
+                case TransformTargetType.rotationDegrees:
+                    return new es.Vector2(this._transform.rotationDegrees);
+                case TransformTargetType.localRotationDegrees:
+                    return new es.Vector2(this._transform.localRotationDegrees, 0);
+            }
+        };
+        TransformVector2Tween.prototype.getTargetObject = function () {
+            return this._transform;
+        };
+        TransformVector2Tween.prototype.setTargetAndType = function (transform, targetType) {
+            this._transform = transform;
+            this._targetType = targetType;
+        };
+        TransformVector2Tween.prototype.updateValue = function () {
+            if ((this._targetType == TransformTargetType.rotationDegrees ||
+                this._targetType == TransformTargetType.localRotationDegrees) && !this._isRelative) {
+                this.setTweenedValue(es.Lerps.easeAngle(this._easeType, this._fromValue, this._toValue, this._elapsedTime, this._duration));
+            }
+            else {
+                this.setTweenedValue(es.Lerps.easeVector2(this._easeType, this._fromValue, this._toValue, this._elapsedTime, this._duration));
+            }
+        };
+        TransformVector2Tween.prototype.recycleSelf = function () {
+            if (this._shouldRecycleTween) {
+                this._target = null;
+                this._nextTween = null;
+                this._transform = null;
+                es.Pool.free(this);
+            }
+        };
+        return TransformVector2Tween;
+    }(es.Vector2Tween));
+    es.TransformVector2Tween = TransformVector2Tween;
 })(es || (es = {}));
 var es;
 (function (es) {
@@ -527,87 +838,6 @@ var es;
 })(es || (es = {}));
 var es;
 (function (es) {
-    var NumberTween = (function (_super) {
-        __extends(NumberTween, _super);
-        function NumberTween(target, to, duration) {
-            var _this = _super.call(this) || this;
-            _this.initialize(target, to, duration);
-            return _this;
-        }
-        NumberTween.create = function () {
-            return es.TweenManager.cacheNumberTweens ? es.Pool.obtain(NumberTween) : new NumberTween();
-        };
-        NumberTween.prototype.setIsRelative = function () {
-            this._isRelative = true;
-            this._toValue += this._fromValue;
-            return this;
-        };
-        NumberTween.prototype.updateValue = function () {
-            this._target.setTweenedValue(es.Lerps.ease(this._easeType, this._fromValue, this._toValue, this._elapsedTime, this._duration));
-        };
-        NumberTween.prototype.recycleSelf = function () {
-            _super.prototype.recycleSelf.call(this);
-            if (this._shouldRecycleTween && es.TweenManager.cacheNumberTweens)
-                es.Pool.free(this);
-        };
-        return NumberTween;
-    }(es.Tween));
-    es.NumberTween = NumberTween;
-    var Vector2Tween = (function (_super) {
-        __extends(Vector2Tween, _super);
-        function Vector2Tween(target, to, duration) {
-            var _this = _super.call(this) || this;
-            _this.initialize(target, to, duration);
-            return _this;
-        }
-        Vector2Tween.create = function () {
-            return es.TweenManager.cacheVector2Tweens ? es.Pool.obtain(Vector2Tween) : new Vector2Tween();
-        };
-        Vector2Tween.prototype.setIsRelative = function () {
-            this._isRelative = true;
-            this._toValue.add(this._fromValue);
-            return this;
-        };
-        Vector2Tween.prototype.updateValue = function () {
-            this._target.setTweenedValue(es.Lerps.easeVector2(this._easeType, this._fromValue, this._toValue, this._elapsedTime, this._duration));
-        };
-        Vector2Tween.prototype.recycleSelf = function () {
-            _super.prototype.recycleSelf.call(this);
-            if (this._shouldRecycleTween && es.TweenManager.cacheVector2Tweens)
-                es.Pool.free(this);
-        };
-        return Vector2Tween;
-    }(es.Tween));
-    es.Vector2Tween = Vector2Tween;
-    var RectangleTween = (function (_super) {
-        __extends(RectangleTween, _super);
-        function RectangleTween(target, to, duration) {
-            var _this = _super.call(this) || this;
-            _this.initialize(target, to, duration);
-            return _this;
-        }
-        RectangleTween.create = function () {
-            return es.TweenManager.cacheRectTweens ? es.Pool.obtain(RectangleTween) : new RectangleTween();
-        };
-        RectangleTween.prototype.setIsRelative = function () {
-            this._isRelative = true;
-            this._toValue = new es.Rectangle(this._toValue.x + this._fromValue.x, this._toValue.y + this._fromValue.y, this._toValue.width + this._fromValue.width, this._toValue.height + this._fromValue.height);
-            return this;
-        };
-        RectangleTween.prototype.updateValue = function () {
-            this._target.setTweenedValue(es.Lerps.easeRectangle(this._easeType, this._fromValue, this._toValue, this._elapsedTime, this._duration));
-        };
-        RectangleTween.prototype.recycleSelf = function () {
-            _super.prototype.recycleSelf.call(this);
-            if (this._shouldRecycleTween && es.TweenManager.cacheRectTweens)
-                es.Pool.free(this);
-        };
-        return RectangleTween;
-    }(es.Tween));
-    es.RectangleTween = RectangleTween;
-})(es || (es = {}));
-var es;
-(function (es) {
     var Easing;
     (function (Easing) {
         var Linear = (function () {
@@ -850,6 +1080,10 @@ var es;
         Lerps.lerpRectangle = function (from, to, t) {
             return new es.Rectangle((from.x + (to.x - from.x) * t), (from.y + (to.x - from.y) * t), (from.width + (to.width - from.width) * t), (from.height + (to.height - from.height) * t));
         };
+        Lerps.angleLerp = function (from, to, t) {
+            var toMinusFrom = new es.Vector2(es.MathHelper.deltaAngle(from.x, to.x), es.MathHelper.deltaAngle(from.y, to.y));
+            return new es.Vector2(from.x + toMinusFrom.x * t, from.y + toMinusFrom.y * t);
+        };
         Lerps.ease = function (easeType, from, to, t, duration) {
             return this.lerp(from, to, es.EaseHelper.ease(easeType, t, duration));
         };
@@ -858,6 +1092,17 @@ var es;
         };
         Lerps.easeRectangle = function (easeType, from, to, t, duration) {
             return this.lerpRectangle(from, to, es.EaseHelper.ease(easeType, t, duration));
+        };
+        Lerps.easeAngle = function (easeType, from, to, t, duration) {
+            return this.angleLerp(from, to, es.EaseHelper.ease(easeType, t, duration));
+        };
+        Lerps.fastSpring = function (currentValue, targetValue, velocity, dampingRatio, angularFrequency) {
+            velocity.add(new es.Vector2(-2 * es.Time.deltaTime * dampingRatio * angularFrequency)
+                .multiply(velocity)
+                .add(new es.Vector2(es.Time.deltaTime * angularFrequency * angularFrequency)
+                .multiply(es.Vector2.subtract(targetValue, currentValue))));
+            currentValue.add(new es.Vector2(es.Time.deltaTime).multiply(velocity));
+            return currentValue;
         };
         return Lerps;
     }());

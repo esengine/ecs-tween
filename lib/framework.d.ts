@@ -1700,6 +1700,18 @@ declare module es {
          * @param shift
          */
         static approach(start: number, end: number, shift: number): number;
+        /**
+         * 计算两个给定角之间的最短差值（度数）
+         * @param current
+         * @param target
+         */
+        static deltaAngle(current: number, target: number): number;
+        /**
+         * 循环t，使其永远不大于长度，永远不小于0
+         * @param t
+         * @param length
+         */
+        static repeat(t: number, length: number): number;
     }
 }
 declare module es {

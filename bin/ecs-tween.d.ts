@@ -1,4 +1,40 @@
 declare module es {
+    abstract class AbstractTweenable implements ITweenable {
+        protected _isPaused: boolean;
+        protected _isCurrentlyManagedByTweenManager: boolean;
+        abstract tick(): boolean;
+        recycleSelf(): void;
+        isRunning(): boolean;
+        start(): void;
+        pause(): void;
+        resume(): void;
+        stop(bringToCompletion?: boolean): void;
+    }
+}
+declare module es {
+    class PropertyTweens {
+        static NumberPropertyTo(self: any, memberName: string, to: number, duration: number): ITween<number>;
+        static Vector2PropertyTo(self: any, memeberName: string, to: Vector2, duration: number): ITween<Vector2>;
+    }
+}
+declare module es {
+    class TransformSpringTween extends AbstractTweenable {
+        readonly targetType: TransformTargetType;
+        private _transform;
+        private _targetType;
+        private _targetValue;
+        private _velocity;
+        dampingRatio: number;
+        angularFrequency: number;
+        constructor(transform: Transform, targetType: TransformTargetType, targetValue: Vector2);
+        setTargetValue(targetValue: Vector2): void;
+        updateDampingRatioWithHalfLife(lambda: number): void;
+        tick(): boolean;
+        private setTweenedValue;
+        private getCurrentValueOfTweenedTargetType;
+    }
+}
+declare module es {
     enum LoopType {
         none = 0,
         restartFromBeginning = 1,
@@ -60,6 +96,49 @@ declare module es {
         initialize(target: ITweenTarget<T>, to: T, duration: number): void;
         private handleLooping;
         protected abstract updateValue(): any;
+    }
+}
+declare module es {
+    class NumberTween extends Tween<number> {
+        static create(): NumberTween;
+        constructor(target?: ITweenTarget<number>, to?: number, duration?: number);
+        setIsRelative(): ITween<number>;
+        protected updateValue(): void;
+        recycleSelf(): void;
+    }
+    class Vector2Tween extends Tween<Vector2> {
+        static create(): Vector2Tween;
+        constructor(target?: ITweenTarget<Vector2>, to?: Vector2, duration?: number);
+        setIsRelative(): ITween<Vector2>;
+        protected updateValue(): void;
+        recycleSelf(): void;
+    }
+    class RectangleTween extends Tween<Rectangle> {
+        static create(): RectangleTween;
+        constructor(target?: ITweenTarget<Rectangle>, to?: Rectangle, duration?: number);
+        setIsRelative(): ITween<Rectangle>;
+        protected updateValue(): void;
+        recycleSelf(): void;
+    }
+}
+declare module es {
+    enum TransformTargetType {
+        position = 0,
+        localPosition = 1,
+        scale = 2,
+        localScale = 3,
+        rotationDegrees = 4,
+        localRotationDegrees = 5
+    }
+    class TransformVector2Tween extends Vector2Tween implements ITweenTarget<Vector2> {
+        private _transform;
+        private _targetType;
+        setTweenedValue(value: Vector2): void;
+        getTweenedValue(): Vector2;
+        getTargetObject(): Transform;
+        setTargetAndType(transform: Transform, targetType: TransformTargetType): void;
+        protected updateValue(): void;
+        recycleSelf(): void;
     }
 }
 declare module es {
@@ -125,29 +204,6 @@ declare module es {
     }
 }
 declare module es {
-    class NumberTween extends Tween<number> {
-        static create(): NumberTween;
-        constructor(target?: ITweenTarget<number>, to?: number, duration?: number);
-        setIsRelative(): ITween<number>;
-        protected updateValue(): void;
-        recycleSelf(): void;
-    }
-    class Vector2Tween extends Tween<Vector2> {
-        static create(): Vector2Tween;
-        constructor(target?: ITweenTarget<Vector2>, to?: Vector2, duration?: number);
-        setIsRelative(): ITween<Vector2>;
-        protected updateValue(): void;
-        recycleSelf(): void;
-    }
-    class RectangleTween extends Tween<Rectangle> {
-        static create(): RectangleTween;
-        constructor(target?: ITweenTarget<Rectangle>, to?: Rectangle, duration?: number);
-        setIsRelative(): ITween<Rectangle>;
-        protected updateValue(): void;
-        recycleSelf(): void;
-    }
-}
-declare module es {
     module Easing {
         class Linear {
             static easeNone(t: number, d: number): number;
@@ -210,9 +266,12 @@ declare module es {
         static lerp(from: number, to: number, t: number): number;
         static lerpVector2(from: Vector2, to: Vector2, t: number): Vector2;
         static lerpRectangle(from: Rectangle, to: Rectangle, t: number): Rectangle;
+        static angleLerp(from: Vector2, to: Vector2, t: number): Vector2;
         static ease(easeType: EaseType, from: number, to: number, t: number, duration: number): number;
         static easeVector2(easeType: EaseType, from: Vector2, to: Vector2, t: number, duration: number): Vector2;
         static easeRectangle(easeType: EaseType, from: Rectangle, to: Rectangle, t: number, duration: number): Rectangle;
+        static easeAngle(easeType: EaseType, from: Vector2, to: Vector2, t: number, duration: number): Vector2;
+        static fastSpring(currentValue: Vector2, targetValue: Vector2, velocity: Vector2, dampingRatio: number, angularFrequency: number): Vector2;
     }
 }
 declare module es {

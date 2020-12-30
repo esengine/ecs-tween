@@ -1,3 +1,4 @@
+///<reference path="./Tween.ts"/>
 module es {
     export class NumberTween extends Tween<number> {
         public static create(): NumberTween {
